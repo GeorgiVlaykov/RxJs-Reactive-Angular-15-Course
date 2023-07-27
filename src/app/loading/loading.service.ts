@@ -11,6 +11,8 @@ export class LoadingService {
     console.log("Created LS instance");
   }
   showLoaderUntilCompleted<T>(obs$: Observable<T>): Observable<T> {
+    console.log("showLoaderUntilCompleted()");
+
     return of(null).pipe(
       tap(() => this.loadingOn()),
       concatMap(() => obs$),
@@ -19,10 +21,12 @@ export class LoadingService {
   }
 
   loadingOn() {
+    console.log("loadingOn()");
     this.loadingSubject.next(true);
   }
 
   loadingOff() {
+    console.log("loadingOff()");
     this.loadingSubject.next(false);
   }
 }
