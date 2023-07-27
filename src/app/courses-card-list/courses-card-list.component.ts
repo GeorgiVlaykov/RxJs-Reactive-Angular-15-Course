@@ -1,8 +1,9 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { Course } from "../model/course";
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import { CourseDialogComponent } from "../course-dialog/course-dialog.component";
 
+import { filter, tap } from "rxjs/operators";
 @Component({
   selector: "courses-card-list",
   templateUrl: "./courses-card-list.component.html",
@@ -10,11 +11,11 @@ import { CourseDialogComponent } from "../course-dialog/course-dialog.component"
 })
 export class CoursesCardListComponent implements OnInit {
   @Input() courses: Course[] = [];
+  @Output() coursesChanged = new EventEmitter();
+
   constructor(private dialog: MatDialog) {}
 
-  ngOnInit(): void {
-    throw new Error("Method not implemented.");
-  }
+  ngOnInit(): void {}
 
   editCourse(course: Course) {
     const dialogConfig = new MatDialogConfig();
@@ -26,5 +27,12 @@ export class CoursesCardListComponent implements OnInit {
     dialogConfig.data = course;
 
     const dialogRef = this.dialog.open(CourseDialogComponent, dialogConfig);
+    dialogRef
+      .afterClosed()
+      .pipe(
+        filter((val) => !!val),
+        tap(() => this.coursesChanged.emit())
+      )
+      .subscribe();
   }
 }
